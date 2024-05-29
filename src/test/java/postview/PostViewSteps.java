@@ -56,23 +56,21 @@ public class PostViewSteps {
         assertTrue(posts.stream().anyMatch(post -> post.getTitle().equals(this.helperPost.getTitle())));
     }
 
-    @When("Потребителят въвежда <string> в полето за търсене")
+    @When("Потребителят въвежда {string} в полето за търсене")
     public void the_user_provides_keyword_in_search_bar(String keyword) {
         posts = postService.searchPostsByKeyword(keyword);
-        postsSecondFilter = postService.searchPostsByKeyword(keyword);
         Assert.assertNotNull(posts);
-        Assert.assertNotNull(postsSecondFilter);
     }
 
-    @When("Натиска бутона за търсене")
+    @And("Натиска бутона за търсене")
     public void the_user_clicks_the_search_button() {
         // No specific implementation needed for this example
     }
 
-    @Then("Показва се лист от постове, отговарящи на <string>")
+    @Then("Показва се лист от постове, отговарящи на {string}")
     public void a_list_of_pins_matching_is_displayed(String keyword) {
         for (Post post : posts) {
-            Assert.assertTrue(post.getTitle().contains(keyword.toLowerCase()));
+            Assert.assertTrue(post.getTitle().toLowerCase().contains(keyword.toLowerCase()));
         }
     }
 

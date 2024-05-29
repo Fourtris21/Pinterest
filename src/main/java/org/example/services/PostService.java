@@ -15,8 +15,8 @@ public class PostService {
         posts.add(new Post("Партита", "Изненада торта"));
         posts.add(new Post("Здравословни рецепти", "Варени картофи"));
         posts.add(new Post("Пости", "Веган"));
-        posts.add(new Post("Дом", "Изкуството в дома"));
-        posts.add(new Post("Дом", "Обзавеждане в дома"));
+        posts.add(new Post("Дом", "Art in home"));
+        posts.add(new Post("Дом", "Home interior"));
     }
 
     public List<Post> getPostsByFolderName(String folderName) {
