@@ -1,6 +1,8 @@
 package postview;
 import io.cucumber.java.en.*;
+import org.example.models.Folder;
 import org.example.models.Post;
+import org.example.services.FolderService;
 import org.example.services.PostService;
 import org.junit.Assert;
 
@@ -9,20 +11,18 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
 import java.util.List;
+import java.util.Optional;
+import java.util.Set;
 
 public class PostViewSteps {
     private PostService postService = new PostService();
+    private FolderService folderService = new FolderService();
     private List<Post> posts;
     private List<Post> postsSecondFilter;
     private Post helperPost;
+    private Post selectedPost;
+    private Folder targetFolder;
 
-
-
-
-    @Given("Приложението е отворено")
-    public void the_application_is_opened() {
-        // No specific implementation needed for this example
-    }
 
     @When("Потребителят избира папка с име {string}")
     public void the_user_selects_the_folder_named_posts(String folderName) {
@@ -56,7 +56,7 @@ public class PostViewSteps {
         assertTrue(posts.stream().anyMatch(post -> post.getTitle().equals(this.helperPost.getTitle())));
     }
 
-    @When("Потребителят въвежда {string} в полето за търсене")
+    @When("Потребителят въвежда ключова дума {string} в полето за търсене")
     public void the_user_provides_keyword_in_search_bar(String keyword) {
         posts = postService.searchPostsByKeyword(keyword);
         Assert.assertNotNull(posts);
@@ -67,29 +67,39 @@ public class PostViewSteps {
         // No specific implementation needed for this example
     }
 
-    @Then("Показва се лист от постове, отговарящи на {string}")
+    @Then("Показва се лист от постове, отговарящи на ключовата дума {string}")
     public void a_list_of_pins_matching_is_displayed(String keyword) {
         for (Post post : posts) {
             Assert.assertTrue(post.getTitle().toLowerCase().contains(keyword.toLowerCase()));
         }
     }
 
-    @When("the user selects a pin named {string}")
-    public void the_user_selects_a_pin_named(String pinName) {
-        // Select pin by name logic (if needed)
+    @When("Потребителят избира пост {string}")
+    public void the_user_selects_a_pin_named(String postName){
+        this.selectedPost = postService.getPostByName(postName).get();
+        Assert.assertTrue("Post found: " + postName, postService.getPostByName(postName).isPresent());
     }
 
-
-
-    @When("the user chooses the board {string}")
-    public void the_user_chooses_the_board(String boardName) {
+    @And("Потребителят натиска бутона за запазване")
+    public void the_user_clicks_the_save_button() {
         // No specific implementation needed for this example
     }
 
-    @Then("the pin {string} is saved to the board {string}")
-    public void the_pin_is_saved_to_the_board(String pinName, String boardName) {
-        // Logic to verify the pin is saved to the board
+    @And("Потребителят избира папка {string}")
+    public void the_user_chooses_the_folder(String boardName) {
+        Optional<Folder> selectedFolder = folderService.getFolderByName(boardName);
+        Assert.assertTrue("Folder found: " + boardName, selectedFolder.isPresent());
+        this.targetFolder = selectedFolder.get();
     }
 
-
+    @Then("Постът {string} е запазен в папка {string}")
+    public void the_pin_is_saved_to_the_board(String postName, String folderName) {
+        if (selectedPost != null && targetFolder != null) {
+            folderService.addPostToFolder(targetFolder, selectedPost);
+            Folder fold = folderService.getFolderByName(targetFolder.getTitle()).get();
+            Set<Post> postsInFolder = fold.getPosts();
+            boolean isPostSaved = postsInFolder.stream().anyMatch(post -> post.getTitle().equals(postName));
+            Assert.assertTrue("Post saved in folder: " + folderName, isPostSaved);
+        }
+    }
 }

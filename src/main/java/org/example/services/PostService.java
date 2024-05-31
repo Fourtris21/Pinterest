@@ -4,6 +4,8 @@ import org.example.models.Post;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 public class PostService {
@@ -17,6 +19,7 @@ public class PostService {
         posts.add(new Post("Пости", "Веган"));
         posts.add(new Post("Дом", "Art in home"));
         posts.add(new Post("Дом", "Home interior"));
+        posts.add(new Post("Котки", "Котка Турски Ван"));
     }
 
     public List<Post> getPostsByFolderName(String folderName) {
@@ -37,4 +40,13 @@ public class PostService {
                 .filter(post -> post.getTitle().toLowerCase().contains(keyword.toLowerCase()))
                 .collect(Collectors.toList());
     }
+
+    public Optional<Post> getPostByName(String name) {
+        return posts.stream().filter(post -> post.getTitle().equals(name)).findFirst();
+
+    }
+    public Set<Post> getAllPosts() {
+        return posts.stream().map(post -> post).collect(Collectors.toSet());
+    }
+
 }

@@ -1,6 +1,7 @@
 package org.example.models;
 
 import java.util.Date;
+import java.util.Optional;
 import java.util.Set;
 import lombok.*;
 @Getter
@@ -23,5 +24,8 @@ public class Post {
         this.folderName = folderName;
         this.title = title;
         this.description = "";
+    }
+    public Post(String title){
+        this.title = title;
     }
 }
